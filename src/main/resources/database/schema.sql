@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS Sailors (
+    sid INTEGER PRIMARY KEY,
+    sname TEXT NOT NULL,
+    rating INTEGER NOT NULL,
+    age REAL NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Boats (
+    bid INTEGER PRIMARY KEY,
+    bname TEXT NOT NULL,
+    color TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Reserves (
+    sid INTEGER NOT NULL,
+    bid INTEGER NOT NULL,
+    day TEXT NOT NULL,
+    PRIMARY KEY (sid, bid, day),
+    FOREIGN KEY (sid) REFERENCES Sailors(sid),
+    FOREIGN KEY (bid) REFERENCES Boats(bid)
+);

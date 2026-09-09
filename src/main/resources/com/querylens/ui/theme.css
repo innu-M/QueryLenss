@@ -1,0 +1,53 @@
+.root {
+    -fx-font-family: "Comic Sans MS", "Segoe Print", "Segoe UI", sans-serif;
+    -fx-background-color: #fffaf5;
+    -fx-text-fill: #4a3a45;
+}
+
+.tab-pane > .tab-header-area > .tab-header-background {
+    -fx-background-color: #f9e5ec;
+}
+
+.tab {
+    -fx-background-color: #f6dfe8;
+    -fx-padding: 8 18;
+}
+
+.tab:selected {
+    -fx-background-color: #dff2df;
+}
+
+.label {
+    -fx-text-fill: #4a3a45;
+}
+
+.button {
+    -fx-background-color: #bfe6c3;
+    -fx-background-radius: 16;
+    -fx-padding: 7 15;
+    -fx-font-weight: bold;
+    -fx-text-fill: #304a35;
+}
+
+.button:hover {
+    -fx-background-color: #f4bfd1;
+}
+
+.text-field, .text-area, .list-view, .table-view {
+    -fx-background-color: #fffdf9;
+    -fx-border-color: #edcad7;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #dff2df;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: #dff2df;
+}
+
+.table-row-cell:filled:selected, .list-cell:filled:selected {
+    -fx-background-color: #f7cbd8;
+}
