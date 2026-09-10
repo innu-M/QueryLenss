@@ -17,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -50,9 +51,21 @@ public final class AlternativeCompetitionView extends BorderPane {
     public AlternativeCompetitionView(AlternativeQueryCompetitionService competitionService) {
         this.competitionService = competitionService;
         setPadding(new Insets(16));
-        setTop(createInputPanel());
-        setCenter(createResultsPanel());
+        setCenter(createScrollableContent());
         configureResultsTable();
+    }
+
+    private ScrollPane createScrollableContent() {
+        SplitPane resultsPanel = createResultsPanel();
+        resultsPanel.setMinHeight(360);
+        resultsPanel.setPrefHeight(460);
+
+        VBox content = new VBox(14, createInputPanel(), resultsPanel);
+        ScrollPane scrollPane = new ScrollPane(content);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(false);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        return scrollPane;
     }
 
     private VBox createInputPanel() {
