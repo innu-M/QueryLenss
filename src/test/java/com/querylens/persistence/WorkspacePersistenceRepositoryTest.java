@@ -5,6 +5,7 @@ import com.querylens.recommendation.model.RecommendationStatus;
 import com.querylens.persistence.connection.ConnectionRepository;
 import com.querylens.persistence.query.QueryAnalysisRepository;
 import com.querylens.persistence.query.QueryHistoryRepository;
+import com.querylens.persistence.query.SavedQueryRepository;
 import com.querylens.persistence.recommendation.RecommendationRepository;
 import com.querylens.workspace.model.QueryAnalysis;
 import com.querylens.workspace.model.SqlQueryType;
@@ -27,6 +28,7 @@ class WorkspacePersistenceRepositoryTest {
     private QueryHistoryRepository history;
     private QueryAnalysisRepository analyses;
     private RecommendationRepository recommendations;
+    private SavedQueryRepository savedQueries;
 
     @BeforeEach
     void setUp() {
@@ -36,6 +38,7 @@ class WorkspacePersistenceRepositoryTest {
         history = new QueryHistoryRepository(workspaceDatabase);
         analyses = new QueryAnalysisRepository(workspaceDatabase);
         recommendations = new RecommendationRepository(workspaceDatabase);
+        savedQueries = new SavedQueryRepository(workspaceDatabase);
     }
 
     @Test
@@ -98,6 +101,26 @@ class WorkspacePersistenceRepositoryTest {
         assertEquals(1, recommendations.findAll().size());
         assertThrows(IllegalArgumentException.class, () -> recommendations.findById(saved.get(1).id()));
         assertThrows(IllegalArgumentException.class, () -> recommendations.findById(999));
+    }
+
+    @Test
+    void supportsCompleteSavedQueryCrud() {
+        var first = savedQueries.save("Recent orders", "SELECT * FROM orders");
+        var second = savedQueries.save("Customer lookup", "SELECT * FROM orders WHERE customer_id = 7");
+
+        assertEquals(List.of("Customer lookup", "Recent orders"), savedQueries.findAll().stream()
+                .map(query -> query.title())
+                .toList());
+
+        var updated = savedQueries.update(first.id(), "Recent order list", "SELECT id FROM orders");
+        assertEquals("Recent order list", updated.title());
+        assertEquals("SELECT id FROM orders", updated.sql());
+
+        savedQueries.delete(second.id());
+        assertEquals(List.of("Recent order list"), savedQueries.findAll().stream()
+                .map(query -> query.title())
+                .toList());
+        assertThrows(IllegalArgumentException.class, () -> savedQueries.delete(second.id()));
     }
 
     private QueryAnalysis analysis() {

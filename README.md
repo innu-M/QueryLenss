@@ -37,6 +37,7 @@ QueryLens lets you connect to a SQLite database, run and analyze queries, and ge
 |---|---|
 | **Connections** | Manage saved SQLite database connections |
 | **Query Workspace** | Run `SELECT`/`INSERT`/`UPDATE`/`DELETE` queries, view results, and get automatic complexity/risk analysis |
+| **Saved Queries** | Save, edit, delete, and reload named SQL statements without mixing them with execution history |
 | **Recommendations** | Actionable suggestions (missing indexes, `SELECT *` usage, sort/group support) generated from query analysis |
 | **Benchmark Controls** | Configure warm-up runs, measured runs, timeouts, and ranking strategy before benchmarking |
 | **Alternative Competition** | Generates safe alternative `SELECT` queries, verifies equivalent results, and benchmarks them against the original |
@@ -99,6 +100,7 @@ Each feature area has a persistence layer (`*Repository`), a service/facade laye
 Full reasoning for each pattern — problem, alternatives considered, and future extensibility — is documented per feature:
 
 - 📄 [`docs/QUERY_WORKSPACE.md`](docs/QUERY_WORKSPACE.md)
+- 📄 [`docs/SAVED_QUERIES.md`](docs/SAVED_QUERIES.md)
 - 📄 [`docs/RECOMMENDATIONS_ENGINE.md`](docs/RECOMMENDATIONS_ENGINE.md)
 - 📄 [`docs/ALTERNATIVE_QUERY_COMPETITION.md`](docs/ALTERNATIVE_QUERY_COMPETITION.md)
 - 📄 [`docs/PLAN_TREE_VISUALIZATION.md`](docs/PLAN_TREE_VISUALIZATION.md)
@@ -110,7 +112,7 @@ Full reasoning for each pattern — problem, alternatives considered, and future
 
 SQLite, initialized automatically on first run (`persistence/core/DatabaseInitializer`). Schema: [`src/main/resources/database/schema.sql`](src/main/resources/database/schema.sql).
 
-- **Core workflow:** `database_connections`, `query_history`, `query_analyses`, `recommendations`
+- **Core workflow:** `database_connections`, `saved_queries`, `query_history`, `query_analyses`, `recommendations`
 - **Comparison workflow:** `comparison_sessions`, `comparison_candidates`, `benchmark_runs`
 
 All linked by foreign keys with cascading deletes.
