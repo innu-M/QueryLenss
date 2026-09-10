@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS recommendations (
 
 CREATE TABLE IF NOT EXISTS comparison_sessions (
     id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL DEFAULT '',
     database_path TEXT NOT NULL,
     original_sql TEXT NOT NULL,
     ranking_strategy TEXT NOT NULL,

@@ -1,10 +1,18 @@
 package com.querylens.alternative;
 
-import com.querylens.benchmark.BenchmarkSettings;
-import com.querylens.benchmark.RankingStrategy;
-import com.querylens.persistence.ComparisonHistoryRepository;
-import com.querylens.persistence.DatabaseInitializer;
-import com.querylens.plan.SQLiteQueryPlanInspector;
+import com.querylens.alternative.adapter.SQLiteBenchmarkExecutor;
+import com.querylens.alternative.adapter.SQLiteIndexCatalogProvider;
+import com.querylens.alternative.model.AlternativeCompetitionResult;
+import com.querylens.alternative.model.CompetitionCandidate;
+import com.querylens.alternative.model.GeneratedQueryCandidate;
+import com.querylens.alternative.service.AlternativeQueryCompetitionService;
+import com.querylens.alternative.service.AlternativeQueryGenerator;
+import com.querylens.alternative.service.QueryCandidateGenerator;
+import com.querylens.benchmark.model.BenchmarkSettings;
+import com.querylens.benchmark.model.RankingStrategy;
+import com.querylens.persistence.comparison.ComparisonHistoryRepository;
+import com.querylens.persistence.core.DatabaseInitializer;
+import com.querylens.plan.adapter.SQLiteQueryPlanInspector;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -46,7 +54,7 @@ class AlternativeQueryCompetitionServiceTest {
     void generatesBenchmarksRanksAndPersistsCandidates() {
         AlternativeQueryCompetitionService service = new AlternativeQueryCompetitionService(
                 new AlternativeQueryGenerator(new SQLiteIndexCatalogProvider()),
-                new SQLiteReadOnlyQueryExecutor(), new SQLiteQueryPlanInspector(), history);
+                new SQLiteBenchmarkExecutor(), new SQLiteQueryPlanInspector(), history);
         BenchmarkSettings settings = new BenchmarkSettings(0, 2, Duration.ofSeconds(2), 5, RankingStrategy.MEDIAN);
 
         AlternativeCompetitionResult result = service.compete(
@@ -70,8 +78,8 @@ class AlternativeQueryCompetitionServiceTest {
                 new GeneratedQueryCandidate("Changed result",
                         "SELECT name FROM sailors WHERE rating = 8", "Unsafe test candidate."));
         AlternativeQueryCompetitionService service = new AlternativeQueryCompetitionService(
-                generator, new SQLiteReadOnlyQueryExecutor(),
-                (database, sql) -> List.of(new com.querylens.plan.QueryPlanRow(1, 0, "SCAN sailors")), history);
+                generator, new SQLiteBenchmarkExecutor(),
+                (database, sql) -> List.of(new com.querylens.plan.model.QueryPlanRow(1, 0, "SCAN sailors")), history);
         BenchmarkSettings settings = new BenchmarkSettings(0, 1, Duration.ofSeconds(2), 5, RankingStrategy.MEDIAN);
 
         AlternativeCompetitionResult result = service.compete(

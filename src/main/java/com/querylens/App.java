@@ -1,20 +1,21 @@
 package com.querylens;
 
-import com.querylens.alternative.AlternativeQueryCompetitionService;
-import com.querylens.alternative.AlternativeQueryGenerator;
-import com.querylens.alternative.SQLiteIndexCatalogProvider;
-import com.querylens.alternative.SQLiteReadOnlyQueryExecutor;
-import com.querylens.persistence.DatabaseInitializer;
-import com.querylens.persistence.ComparisonHistoryRepository;
-import com.querylens.plan.PlanComparisonService;
-import com.querylens.plan.SQLiteQueryPlanInspector;
-import com.querylens.ui.BenchmarkControlsView;
-import com.querylens.ui.AlternativeCompetitionView;
-import com.querylens.ui.ComparisonHistoryView;
-import com.querylens.ui.PlanTreeComparisonView;
-import com.querylens.ui.ConnectionsView;
-import com.querylens.ui.QueryWorkspaceView;
-import com.querylens.ui.RecommendationsView;
+import com.querylens.alternative.service.AlternativeQueryCompetitionService;
+import com.querylens.alternative.service.AlternativeQueryGenerator;
+import com.querylens.alternative.adapter.SQLiteIndexCatalogProvider;
+import com.querylens.alternative.adapter.SQLiteBenchmarkExecutor;
+import com.querylens.persistence.core.DatabaseInitializer;
+import com.querylens.persistence.core.DemoDataSeeder;
+import com.querylens.persistence.comparison.ComparisonHistoryRepository;
+import com.querylens.plan.service.PlanComparisonService;
+import com.querylens.plan.adapter.SQLiteQueryPlanInspector;
+import com.querylens.ui.benchmark.BenchmarkControlsView;
+import com.querylens.ui.alternative.AlternativeCompetitionView;
+import com.querylens.ui.history.ComparisonHistoryView;
+import com.querylens.ui.plan.PlanTreeComparisonView;
+import com.querylens.ui.connection.ConnectionsView;
+import com.querylens.ui.workspace.QueryWorkspaceView;
+import com.querylens.ui.recommendation.RecommendationsView;
 import com.querylens.workspace.facade.QueryWorkspaceService;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -35,6 +36,7 @@ public class App extends Application {
     public void start(Stage stage) {
         Path databasePath = Path.of("data", "querylens.db");
         new DatabaseInitializer().initialize(databasePath);
+        new DemoDataSeeder().seed(databasePath);
         ComparisonHistoryRepository historyRepository = new ComparisonHistoryRepository(databasePath);
         QueryWorkspaceService workspaceService = new QueryWorkspaceService(databasePath);
         QueryWorkspaceView workspaceView = new QueryWorkspaceView(workspaceService);
@@ -46,7 +48,7 @@ public class App extends Application {
         navigation.getTabs().add(new Tab("Benchmark", createBenchmarkWorkspace(databasePath)));
         AlternativeQueryCompetitionService competitionService = new AlternativeQueryCompetitionService(
                 new AlternativeQueryGenerator(new SQLiteIndexCatalogProvider()),
-                new SQLiteReadOnlyQueryExecutor(),
+                new SQLiteBenchmarkExecutor(),
                 new SQLiteQueryPlanInspector(),
                 historyRepository);
         navigation.getTabs().add(new Tab("Alternative Competition",
@@ -86,4 +88,3 @@ public class App extends Application {
         launch(args);
     }
 }
-
