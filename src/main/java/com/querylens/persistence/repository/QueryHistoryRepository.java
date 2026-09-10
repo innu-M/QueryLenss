@@ -1,4 +1,4 @@
-package com.querylens.persistence;
+package com.querylens.persistence.repository;
 
 import com.querylens.workspace.QueryHistoryEntry;
 import com.querylens.workspace.SqlQueryType;
@@ -50,3 +50,6 @@ public final class QueryHistoryRepository extends WorkspaceRepository {
         }
     }
 }
+
+
+

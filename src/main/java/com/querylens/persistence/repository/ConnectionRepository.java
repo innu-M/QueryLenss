@@ -1,4 +1,4 @@
-package com.querylens.persistence;
+package com.querylens.persistence.repository;
 
 import com.querylens.workspace.SavedConnection;
 
@@ -44,3 +44,6 @@ public final class ConnectionRepository extends WorkspaceRepository {
         }
     }
 }
+
+
+

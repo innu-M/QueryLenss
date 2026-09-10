@@ -1,4 +1,4 @@
-package com.querylens.recommendation;
+package com.querylens.recommendation.strategy;
 
 import com.querylens.workspace.QueryAnalysis;
 
@@ -10,3 +10,6 @@ public final class JoinIndexRecommendationStrategy implements RecommendationStra
         return List.of("Check that both sides of the join use indexed columns.");
     }
 }
+
+
+

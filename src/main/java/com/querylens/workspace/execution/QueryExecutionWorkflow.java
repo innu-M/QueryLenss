@@ -1,16 +1,24 @@
-package com.querylens.workspace;
+package com.querylens.workspace.execution;
 
-import com.querylens.persistence.QueryAnalysisRepository;
-import com.querylens.persistence.QueryHistoryRepository;
-import com.querylens.persistence.RecommendationRepository;
+import com.querylens.persistence.repository.QueryAnalysisRepository;
+import com.querylens.persistence.repository.QueryHistoryRepository;
+import com.querylens.persistence.repository.RecommendationRepository;
 import com.querylens.recommendation.Recommendation;
 import com.querylens.recommendation.RecommendationEngine;
+import com.querylens.workspace.QueryAnalysis;
+import com.querylens.workspace.QueryExecutionResult;
+import com.querylens.workspace.QueryHistoryEntry;
+import com.querylens.workspace.SqlClassifier;
+import com.querylens.workspace.SqlQueryType;
+import com.querylens.workspace.analysis.SimpleQueryAnalyzer;
+import com.querylens.workspace.execution.template.QueryExecutionTemplate;
+import com.querylens.workspace.validation.chain.SqlValidationChain;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-final class QueryExecutionWorkflow {
+public final class QueryExecutionWorkflow {
     private final QueryHistoryRepository history;
     private final QueryAnalysisRepository analyses;
     private final RecommendationRepository recommendations;
@@ -20,7 +28,7 @@ final class QueryExecutionWorkflow {
     private final SimpleQueryAnalyzer analyzer;
     private final QueryExecutionTemplate executor;
 
-    QueryExecutionWorkflow(QueryHistoryRepository history,
+    public QueryExecutionWorkflow(QueryHistoryRepository history,
                            QueryAnalysisRepository analyses,
                            RecommendationRepository recommendations,
                            RecommendationEngine recommendationEngine,
@@ -38,16 +46,16 @@ final class QueryExecutionWorkflow {
         this.executor = executor;
     }
 
-    boolean requiresMutationConfirmation(String sql) {
+    public boolean requiresMutationConfirmation(String sql) {
         validation.validate(sql);
         return classifier.classify(sql) != SqlQueryType.SELECT;
     }
 
-    List<QueryHistoryEntry> recentHistory() {
+    public List<QueryHistoryEntry> recentHistory() {
         return history.recent(20);
     }
 
-    QueryExecutionResult run(Path databasePath, String sql) {
+    public QueryExecutionResult run(Path databasePath, String sql) {
         validateDatabase(databasePath);
         validation.validate(sql);
 
@@ -82,3 +90,6 @@ final class QueryExecutionWorkflow {
         }
     }
 }
+
+
+

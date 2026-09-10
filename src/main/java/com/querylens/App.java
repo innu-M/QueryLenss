@@ -15,7 +15,7 @@ import com.querylens.ui.PlanTreeComparisonView;
 import com.querylens.ui.ConnectionsView;
 import com.querylens.ui.QueryWorkspaceView;
 import com.querylens.ui.RecommendationsView;
-import com.querylens.workspace.QueryWorkspaceService;
+import com.querylens.workspace.facade.QueryWorkspaceService;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -86,3 +86,4 @@ public class App extends Application {
         launch(args);
     }
 }
+

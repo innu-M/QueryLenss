@@ -1,6 +1,6 @@
 package com.querylens.ui;
 
-import com.querylens.workspace.QueryWorkspaceService;
+import com.querylens.workspace.facade.QueryWorkspaceService;
 import com.querylens.workspace.SavedConnection;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -79,3 +79,4 @@ public final class ConnectionsView extends VBox {
         new Alert(Alert.AlertType.ERROR, message).showAndWait();
     }
 }
+

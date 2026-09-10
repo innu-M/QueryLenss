@@ -101,3 +101,4 @@ public final class CancellableBenchmarkRunner implements AutoCloseable {
         executor.shutdownNow();
     }
 }
+

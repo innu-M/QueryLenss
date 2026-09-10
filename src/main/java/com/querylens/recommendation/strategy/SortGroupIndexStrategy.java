@@ -1,4 +1,4 @@
-package com.querylens.recommendation;
+package com.querylens.recommendation.strategy;
 
 import com.querylens.workspace.QueryAnalysis;
 
@@ -10,3 +10,6 @@ public final class SortGroupIndexStrategy implements RecommendationStrategy {
         return List.of("Consider an index that supports this query's ORDER BY or GROUP BY clause.");
     }
 }
+
+
+

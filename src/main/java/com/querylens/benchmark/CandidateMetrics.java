@@ -47,3 +47,4 @@ public record CandidateMetrics(String candidateLabel, List<Long> durationsNanos)
         };
     }
 }
+

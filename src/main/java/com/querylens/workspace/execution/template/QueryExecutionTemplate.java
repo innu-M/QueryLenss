@@ -1,4 +1,6 @@
-package com.querylens.workspace;
+package com.querylens.workspace.execution.template;
+import com.querylens.workspace.SqlQueryType;
+
 
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -71,3 +73,7 @@ public abstract class QueryExecutionTemplate {
                                  long durationMillis) {
     }
 }
+
+
+
+

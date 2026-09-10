@@ -1,4 +1,4 @@
-package com.querylens.recommendation;
+package com.querylens.recommendation.state;
 
 public final class PendingRecommendationState implements RecommendationState {
     @Override
@@ -16,3 +16,6 @@ public final class PendingRecommendationState implements RecommendationState {
         return new DismissedRecommendationState();
     }
 }
+
+
+

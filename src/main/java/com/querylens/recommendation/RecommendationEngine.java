@@ -1,4 +1,5 @@
 package com.querylens.recommendation;
+import com.querylens.recommendation.strategy.RecommendationStrategyFactory;
 
 import com.querylens.workspace.QueryAnalysis;
 
@@ -17,3 +18,5 @@ public final class RecommendationEngine {
                 .toList();
     }
 }
+
+

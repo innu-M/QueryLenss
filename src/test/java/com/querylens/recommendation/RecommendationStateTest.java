@@ -1,5 +1,10 @@
 package com.querylens.recommendation;
 
+import com.querylens.recommendation.state.AppliedRecommendationState;
+import com.querylens.recommendation.state.DismissedRecommendationState;
+import com.querylens.recommendation.state.PendingRecommendationState;
+import com.querylens.recommendation.state.RecommendationState;
+import com.querylens.recommendation.state.RecommendationStatus;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,3 +25,4 @@ class RecommendationStateTest {
         assertThrows(IllegalStateException.class, () -> new DismissedRecommendationState().apply());
     }
 }
+

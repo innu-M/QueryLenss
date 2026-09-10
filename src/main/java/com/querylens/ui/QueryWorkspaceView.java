@@ -2,7 +2,7 @@ package com.querylens.ui;
 
 import com.querylens.workspace.QueryExecutionResult;
 import com.querylens.workspace.QueryHistoryEntry;
-import com.querylens.workspace.QueryWorkspaceService;
+import com.querylens.workspace.facade.QueryWorkspaceService;
 import com.querylens.workspace.SavedConnection;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -178,3 +178,4 @@ public final class QueryWorkspaceView extends VBox {
         Platform.runLater(() -> new Alert(Alert.AlertType.ERROR, message).showAndWait());
     }
 }
+

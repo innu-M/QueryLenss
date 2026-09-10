@@ -1,4 +1,7 @@
-package com.querylens.workspace;
+package com.querylens.workspace.analysis;
+import com.querylens.workspace.QueryAnalysis;
+import com.querylens.workspace.SqlQueryType;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,3 +54,7 @@ public final class SimpleQueryAnalyzer {
         return count;
     }
 }
+
+
+
+

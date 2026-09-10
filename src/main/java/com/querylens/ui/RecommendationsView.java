@@ -1,8 +1,8 @@
 package com.querylens.ui;
 
 import com.querylens.recommendation.Recommendation;
-import com.querylens.recommendation.RecommendationStatus;
-import com.querylens.workspace.QueryWorkspaceService;
+import com.querylens.recommendation.state.RecommendationStatus;
+import com.querylens.workspace.facade.QueryWorkspaceService;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -75,3 +75,4 @@ public final class RecommendationsView extends VBox {
         dismiss.setDisable(!pending);
     }
 }
+

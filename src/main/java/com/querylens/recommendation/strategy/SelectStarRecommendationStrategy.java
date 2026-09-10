@@ -1,4 +1,4 @@
-package com.querylens.recommendation;
+package com.querylens.recommendation.strategy;
 
 import com.querylens.workspace.QueryAnalysis;
 
@@ -10,3 +10,6 @@ public final class SelectStarRecommendationStrategy implements RecommendationStr
         return List.of("Select only the columns you need instead of using SELECT *.");
     }
 }
+
+
+

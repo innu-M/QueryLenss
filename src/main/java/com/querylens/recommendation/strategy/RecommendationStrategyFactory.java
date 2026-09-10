@@ -1,4 +1,4 @@
-package com.querylens.recommendation;
+package com.querylens.recommendation.strategy;
 
 import com.querylens.workspace.QueryAnalysis;
 
@@ -23,3 +23,6 @@ public final class RecommendationStrategyFactory {
         return List.copyOf(strategies);
     }
 }
+
+
+

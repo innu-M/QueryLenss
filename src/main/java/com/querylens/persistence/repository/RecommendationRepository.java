@@ -1,7 +1,7 @@
-package com.querylens.persistence;
+package com.querylens.persistence.repository;
 
 import com.querylens.recommendation.Recommendation;
-import com.querylens.recommendation.RecommendationStatus;
+import com.querylens.recommendation.state.RecommendationStatus;
 
 import java.nio.file.Path;
 import java.sql.ResultSet;
@@ -87,3 +87,6 @@ public final class RecommendationRepository extends WorkspaceRepository {
                 RecommendationStatus.valueOf(row.getString("status")));
     }
 }
+
+
+

@@ -1,4 +1,4 @@
-package com.querylens.persistence;
+package com.querylens.persistence.repository;
 
 import com.querylens.workspace.QueryAnalysis;
 
@@ -30,3 +30,6 @@ public final class QueryAnalysisRepository extends WorkspaceRepository {
         }
     }
 }
+
+
+

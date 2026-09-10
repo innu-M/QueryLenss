@@ -1,4 +1,4 @@
-package com.querylens.recommendation;
+package com.querylens.recommendation.state;
 
 public final class RecommendationStateFactory {
     private RecommendationStateFactory() {
@@ -12,3 +12,6 @@ public final class RecommendationStateFactory {
         };
     }
 }
+
+
+

@@ -1,6 +1,7 @@
 package com.querylens.workspace;
 
 import com.querylens.persistence.DatabaseInitializer;
+import com.querylens.workspace.facade.QueryWorkspaceService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -58,7 +59,7 @@ class QueryWorkspaceServiceTest {
         long recommendationId = result.recommendations().getFirst().id();
         service.applyRecommendation(recommendationId);
 
-        assertEquals(com.querylens.recommendation.RecommendationStatus.APPLIED,
+        assertEquals(com.querylens.recommendation.state.RecommendationStatus.APPLIED,
                 service.recommendations().stream().filter(item -> item.id() == recommendationId).findFirst().orElseThrow().status());
         assertThrows(IllegalStateException.class, () -> service.dismissRecommendation(recommendationId));
     }
@@ -74,3 +75,4 @@ class QueryWorkspaceServiceTest {
         assertThrows(IllegalArgumentException.class, () -> service.run(targetDatabase, "DROP TABLE orders"));
     }
 }
+

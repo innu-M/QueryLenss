@@ -1,4 +1,4 @@
-package com.querylens.workspace;
+package com.querylens.workspace.validation.chain;
 
 import java.util.List;
 import java.util.Locale;
@@ -46,3 +46,6 @@ public final class SqlValidationChain {
                 || keyword.equals("VACUUM");
     }
 }
+
+
+

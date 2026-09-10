@@ -1,6 +1,10 @@
 package com.querylens.persistence;
 
-import com.querylens.recommendation.RecommendationStatus;
+import com.querylens.recommendation.state.RecommendationStatus;
+import com.querylens.persistence.repository.ConnectionRepository;
+import com.querylens.persistence.repository.QueryAnalysisRepository;
+import com.querylens.persistence.repository.QueryHistoryRepository;
+import com.querylens.persistence.repository.RecommendationRepository;
 import com.querylens.workspace.QueryAnalysis;
 import com.querylens.workspace.SqlQueryType;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,3 +80,4 @@ class WorkspacePersistenceRepositoryTest {
                 List.of("customer_id"), false, 1, "LOW");
     }
 }
+

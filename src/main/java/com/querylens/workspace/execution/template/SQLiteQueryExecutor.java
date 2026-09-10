@@ -1,4 +1,4 @@
-package com.querylens.workspace;
+package com.querylens.workspace.execution.template;
 
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -10,3 +10,6 @@ public final class SQLiteQueryExecutor extends QueryExecutionTemplate {
         return DriverManager.getConnection("jdbc:sqlite:" + databasePath.toAbsolutePath());
     }
 }
+
+
+

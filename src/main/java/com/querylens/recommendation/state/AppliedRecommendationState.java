@@ -1,4 +1,4 @@
-package com.querylens.recommendation;
+package com.querylens.recommendation.state;
 
 public final class AppliedRecommendationState implements RecommendationState {
     @Override
@@ -16,3 +16,6 @@ public final class AppliedRecommendationState implements RecommendationState {
         throw new IllegalStateException("Applied recommendations cannot be dismissed.");
     }
 }
+
+
+

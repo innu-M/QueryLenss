@@ -1,7 +1,8 @@
 package com.querylens.recommendation;
 
-import com.querylens.workspace.SimpleQueryAnalyzer;
+import com.querylens.workspace.analysis.SimpleQueryAnalyzer;
 import com.querylens.workspace.SqlQueryType;
+import com.querylens.recommendation.strategy.RecommendationStrategyFactory;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -26,3 +27,4 @@ class RecommendationEngineTest {
         assertTrue(suggestions.stream().anyMatch(message -> message.contains("join")));
     }
 }
+

@@ -1,4 +1,4 @@
-package com.querylens.recommendation;
+package com.querylens.recommendation.state;
 
 public interface RecommendationState {
     RecommendationStatus status();
@@ -7,3 +7,6 @@ public interface RecommendationState {
 
     RecommendationState dismiss();
 }
+
+
+

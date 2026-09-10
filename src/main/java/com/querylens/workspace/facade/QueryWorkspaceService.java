@@ -1,14 +1,22 @@
-package com.querylens.workspace;
+package com.querylens.workspace.facade;
 
-import com.querylens.persistence.ConnectionRepository;
-import com.querylens.persistence.QueryHistoryRepository;
-import com.querylens.persistence.QueryAnalysisRepository;
-import com.querylens.persistence.RecommendationRepository;
+import com.querylens.persistence.repository.ConnectionRepository;
+import com.querylens.persistence.repository.QueryHistoryRepository;
+import com.querylens.persistence.repository.QueryAnalysisRepository;
+import com.querylens.persistence.repository.RecommendationRepository;
 import com.querylens.recommendation.Recommendation;
 import com.querylens.recommendation.RecommendationEngine;
-import com.querylens.recommendation.RecommendationState;
-import com.querylens.recommendation.RecommendationStateFactory;
-import com.querylens.recommendation.RecommendationStrategyFactory;
+import com.querylens.recommendation.state.RecommendationState;
+import com.querylens.recommendation.state.RecommendationStateFactory;
+import com.querylens.recommendation.strategy.RecommendationStrategyFactory;
+import com.querylens.workspace.QueryExecutionResult;
+import com.querylens.workspace.QueryHistoryEntry;
+import com.querylens.workspace.SavedConnection;
+import com.querylens.workspace.SqlClassifier;
+import com.querylens.workspace.analysis.SimpleQueryAnalyzer;
+import com.querylens.workspace.execution.QueryExecutionWorkflow;
+import com.querylens.workspace.execution.template.SQLiteQueryExecutor;
+import com.querylens.workspace.validation.chain.SqlValidationChain;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -80,3 +88,6 @@ public final class QueryWorkspaceService {
         );
     }
 }
+
+
+

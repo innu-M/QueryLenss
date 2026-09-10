@@ -81,3 +81,4 @@ public final class SandboxIndexTester {
     private record QuerySample(long elapsedNanos, String fingerprint) {
     }
 }
+
