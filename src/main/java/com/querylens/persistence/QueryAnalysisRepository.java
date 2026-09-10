@@ -3,20 +3,18 @@ package com.querylens.persistence;
 import com.querylens.workspace.QueryAnalysis;
 
 import java.nio.file.Path;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-public final class QueryAnalysisRepository {
-    private final Path workspaceDatabase;
+public final class QueryAnalysisRepository extends WorkspaceRepository {
 
     public QueryAnalysisRepository(Path workspaceDatabase) {
-        this.workspaceDatabase = workspaceDatabase;
+        super(workspaceDatabase);
     }
 
     public long save(long historyId, QueryAnalysis analysis) {
         String insert = "INSERT INTO query_analyses(history_id, complexity_score, risk_level, plan_text) VALUES (?, ?, ?, ?)";
-        try (var connection = DriverManager.getConnection(url());
+        try (var connection = openConnection();
              var statement = connection.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS)) {
             statement.setLong(1, historyId);
             statement.setInt(2, analysis.complexityScore());
@@ -30,9 +28,5 @@ public final class QueryAnalysisRepository {
         } catch (Exception exception) {
             throw new IllegalStateException("Could not save query analysis.", exception);
         }
-    }
-
-    private String url() {
-        return "jdbc:sqlite:" + workspaceDatabase.toAbsolutePath();
     }
 }

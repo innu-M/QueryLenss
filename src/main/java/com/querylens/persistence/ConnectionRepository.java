@@ -3,22 +3,20 @@ package com.querylens.persistence;
 import com.querylens.workspace.SavedConnection;
 
 import java.nio.file.Path;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class ConnectionRepository {
-    private final Path workspaceDatabase;
+public final class ConnectionRepository extends WorkspaceRepository {
 
     public ConnectionRepository(Path workspaceDatabase) {
-        this.workspaceDatabase = workspaceDatabase;
+        super(workspaceDatabase);
     }
 
     public SavedConnection save(String displayName, Path databasePath) {
         String sql = "INSERT INTO database_connections(display_name, database_path) VALUES (?, ?)";
-        try (var connection = DriverManager.getConnection(url());
+        try (var connection = openConnection();
              PreparedStatement statement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, displayName.strip());
             statement.setString(2, databasePath.toAbsolutePath().toString());
@@ -34,7 +32,7 @@ public final class ConnectionRepository {
 
     public List<SavedConnection> findAll() {
         List<SavedConnection> connections = new ArrayList<>();
-        try (var connection = DriverManager.getConnection(url());
+        try (var connection = openConnection();
              var statement = connection.prepareStatement("SELECT id, display_name, database_path FROM database_connections ORDER BY display_name");
              ResultSet rows = statement.executeQuery()) {
             while (rows.next()) {
@@ -44,9 +42,5 @@ public final class ConnectionRepository {
         } catch (Exception exception) {
             throw new IllegalStateException("Could not load saved database connections.", exception);
         }
-    }
-
-    private String url() {
-        return "jdbc:sqlite:" + workspaceDatabase.toAbsolutePath();
     }
 }

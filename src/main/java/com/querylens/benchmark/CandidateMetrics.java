@@ -5,12 +5,18 @@ import java.util.List;
 
 public record CandidateMetrics(String candidateLabel, List<Long> durationsNanos) {
     public CandidateMetrics {
-        if (candidateLabel == null || candidateLabel.isBlank()) throw new IllegalArgumentException("A candidate label is required.");
+        if (candidateLabel == null || candidateLabel.isBlank()) {
+            throw new IllegalArgumentException("A candidate label is required.");
+        }
         durationsNanos = List.copyOf(durationsNanos);
-        if (durationsNanos.isEmpty() || durationsNanos.stream().anyMatch(value -> value < 0)) throw new IllegalArgumentException("Measured durations must be non-negative.");
+        if (durationsNanos.isEmpty() || durationsNanos.stream().anyMatch(value -> value < 0)) {
+            throw new IllegalArgumentException("Measured durations must be non-negative.");
+        }
     }
 
-    public double averageNanos() { return durationsNanos.stream().mapToDouble(Long::doubleValue).average().orElse(0); }
+    public double averageNanos() {
+        return durationsNanos.stream().mapToDouble(Long::doubleValue).average().orElse(0);
+    }
 
     public long medianNanos() {
         List<Long> sorted = durationsNanos.stream().sorted().toList();
@@ -25,7 +31,9 @@ public record CandidateMetrics(String candidateLabel, List<Long> durationsNanos)
 
     public double stabilityScore() {
         double average = averageNanos();
-        if (average == 0) return 0;
+        if (average == 0) {
+            return 0;
+        }
         double variance = durationsNanos.stream().mapToDouble(value -> Math.pow(value - average, 2)).average().orElse(0);
         return Math.sqrt(variance) / average;
     }

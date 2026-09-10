@@ -16,36 +16,13 @@ import java.util.List;
 
 public final class QueryWorkspaceService {
     private final ConnectionRepository connections;
-    private final QueryHistoryRepository history;
-    private final QueryAnalysisRepository analyses;
     private final RecommendationRepository recommendations;
-    private final RecommendationEngine recommendationEngine;
-    private final SqlValidationChain validation;
-    private final SqlClassifier classifier;
-    private final SimpleQueryAnalyzer analyzer;
-    private final QueryExecutionTemplate executor;
+    private final QueryExecutionWorkflow executionWorkflow;
 
     public QueryWorkspaceService(Path workspaceDatabase) {
-        this(new ConnectionRepository(workspaceDatabase), new QueryHistoryRepository(workspaceDatabase),
-                new QueryAnalysisRepository(workspaceDatabase), new RecommendationRepository(workspaceDatabase),
-                new RecommendationEngine(new RecommendationStrategyFactory()), new SqlValidationChain(),
-                new SqlClassifier(), new SimpleQueryAnalyzer(), new SQLiteQueryExecutor());
-    }
-
-    QueryWorkspaceService(ConnectionRepository connections, QueryHistoryRepository history,
-                          QueryAnalysisRepository analyses, RecommendationRepository recommendations,
-                          RecommendationEngine recommendationEngine,
-                          SqlValidationChain validation, SqlClassifier classifier,
-                          SimpleQueryAnalyzer analyzer, QueryExecutionTemplate executor) {
-        this.connections = connections;
-        this.history = history;
-        this.analyses = analyses;
-        this.recommendations = recommendations;
-        this.recommendationEngine = recommendationEngine;
-        this.validation = validation;
-        this.classifier = classifier;
-        this.analyzer = analyzer;
-        this.executor = executor;
+        this.connections = new ConnectionRepository(workspaceDatabase);
+        this.recommendations = new RecommendationRepository(workspaceDatabase);
+        this.executionWorkflow = createExecutionWorkflow(workspaceDatabase, recommendations);
     }
 
     public SavedConnection saveConnection(String displayName, Path databasePath) {
@@ -54,31 +31,32 @@ public final class QueryWorkspaceService {
         return connections.save(displayName, databasePath);
     }
 
-    public List<SavedConnection> connections() { return connections.findAll(); }
+    public List<SavedConnection> connections() {
+        return connections.findAll();
+    }
 
-    public List<QueryHistoryEntry> recentHistory() { return history.recent(20); }
+    public List<QueryHistoryEntry> recentHistory() {
+        return executionWorkflow.recentHistory();
+    }
 
-    public List<Recommendation> recommendations() { return recommendations.findAll(); }
+    public List<Recommendation> recommendations() {
+        return recommendations.findAll();
+    }
 
-    public void applyRecommendation(long id) { updateRecommendation(id, true); }
+    public void applyRecommendation(long id) {
+        updateRecommendation(id, true);
+    }
 
-    public void dismissRecommendation(long id) { updateRecommendation(id, false); }
+    public void dismissRecommendation(long id) {
+        updateRecommendation(id, false);
+    }
 
     public boolean requiresMutationConfirmation(String sql) {
-        validation.validate(sql);
-        return classifier.classify(sql) != SqlQueryType.SELECT;
+        return executionWorkflow.requiresMutationConfirmation(sql);
     }
 
     public QueryExecutionResult run(Path databasePath, String sql) {
-        if (databasePath == null || !Files.isRegularFile(databasePath)) throw new IllegalArgumentException("Choose an existing SQLite database file.");
-        validation.validate(sql);
-        SqlQueryType type = classifier.classify(sql);
-        QueryExecutionTemplate.RawQueryResult raw = executor.execute(databasePath, sql, type);
-        QueryAnalysis analysis = analyzer.analyze(sql, type);
-        long historyId = history.save(sql, type, raw.durationMillis());
-        long analysisId = analyses.save(historyId, analysis);
-        List<Recommendation> generated = recommendations.saveAll(analysisId, recommendationEngine.generate(analysis));
-        return new QueryExecutionResult(raw.returnsRows(), raw.columns(), raw.rows(), raw.affectedRows(), raw.durationMillis(), analysis, generated);
+        return executionWorkflow.run(databasePath, sql);
     }
 
     private void updateRecommendation(long id, boolean apply) {
@@ -86,5 +64,19 @@ public final class QueryWorkspaceService {
         RecommendationState current = RecommendationStateFactory.from(recommendation.status());
         RecommendationState next = apply ? current.apply() : current.dismiss();
         recommendations.updateStatus(id, next.status());
+    }
+
+    private QueryExecutionWorkflow createExecutionWorkflow(Path workspaceDatabase,
+                                                            RecommendationRepository recommendations) {
+        return new QueryExecutionWorkflow(
+                new QueryHistoryRepository(workspaceDatabase),
+                new QueryAnalysisRepository(workspaceDatabase),
+                recommendations,
+                new RecommendationEngine(new RecommendationStrategyFactory()),
+                new SqlValidationChain(),
+                new SqlClassifier(),
+                new SimpleQueryAnalyzer(),
+                new SQLiteQueryExecutor()
+        );
     }
 }

@@ -4,17 +4,15 @@ import com.querylens.recommendation.Recommendation;
 import com.querylens.recommendation.RecommendationStatus;
 
 import java.nio.file.Path;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class RecommendationRepository {
-    private final Path workspaceDatabase;
+public final class RecommendationRepository extends WorkspaceRepository {
 
     public RecommendationRepository(Path workspaceDatabase) {
-        this.workspaceDatabase = workspaceDatabase;
+        super(workspaceDatabase);
     }
 
     public List<Recommendation> saveAll(long analysisId, List<String> messages) {
@@ -27,7 +25,7 @@ public final class RecommendationRepository {
 
     public List<Recommendation> findAll() {
         String query = "SELECT id, analysis_id, message, status FROM recommendations ORDER BY id DESC";
-        try (var connection = DriverManager.getConnection(url());
+        try (var connection = openConnection();
              var statement = connection.prepareStatement(query);
              ResultSet rows = statement.executeQuery()) {
             List<Recommendation> recommendations = new ArrayList<>();
@@ -40,7 +38,7 @@ public final class RecommendationRepository {
 
     public Recommendation findById(long id) {
         String query = "SELECT id, analysis_id, message, status FROM recommendations WHERE id = ?";
-        try (var connection = DriverManager.getConnection(url());
+        try (var connection = openConnection();
              var statement = connection.prepareStatement(query)) {
             statement.setLong(1, id);
             try (ResultSet rows = statement.executeQuery()) {
@@ -56,7 +54,7 @@ public final class RecommendationRepository {
 
     public void updateStatus(long id, RecommendationStatus status) {
         String update = "UPDATE recommendations SET status = ? WHERE id = ?";
-        try (var connection = DriverManager.getConnection(url());
+        try (var connection = openConnection();
              var statement = connection.prepareStatement(update)) {
             statement.setString(1, status.name());
             statement.setLong(2, id);
@@ -70,7 +68,7 @@ public final class RecommendationRepository {
 
     private Recommendation save(long analysisId, String message) {
         String insert = "INSERT INTO recommendations(analysis_id, message) VALUES (?, ?)";
-        try (var connection = DriverManager.getConnection(url());
+        try (var connection = openConnection();
              var statement = connection.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS)) {
             statement.setLong(1, analysisId);
             statement.setString(2, message);
@@ -87,9 +85,5 @@ public final class RecommendationRepository {
     private Recommendation read(ResultSet row) throws Exception {
         return new Recommendation(row.getLong("id"), row.getLong("analysis_id"), row.getString("message"),
                 RecommendationStatus.valueOf(row.getString("status")));
-    }
-
-    private String url() {
-        return "jdbc:sqlite:" + workspaceDatabase.toAbsolutePath();
     }
 }

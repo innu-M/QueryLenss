@@ -4,22 +4,20 @@ import com.querylens.workspace.QueryHistoryEntry;
 import com.querylens.workspace.SqlQueryType;
 
 import java.nio.file.Path;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class QueryHistoryRepository {
-    private final Path workspaceDatabase;
+public final class QueryHistoryRepository extends WorkspaceRepository {
 
     public QueryHistoryRepository(Path workspaceDatabase) {
-        this.workspaceDatabase = workspaceDatabase;
+        super(workspaceDatabase);
     }
 
     public long save(String sql, SqlQueryType type, long durationMillis) {
         String insert = "INSERT INTO query_history(sql_text, query_type, duration_ms) VALUES (?, ?, ?)";
-        try (var connection = DriverManager.getConnection(url());
+        try (var connection = openConnection();
              var statement = connection.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, sql);
             statement.setString(2, type.name());
@@ -37,7 +35,7 @@ public final class QueryHistoryRepository {
     public List<QueryHistoryEntry> recent(int limit) {
         List<QueryHistoryEntry> entries = new ArrayList<>();
         String query = "SELECT id, sql_text, query_type, duration_ms, executed_at FROM query_history ORDER BY id DESC LIMIT ?";
-        try (var connection = DriverManager.getConnection(url());
+        try (var connection = openConnection();
              var statement = connection.prepareStatement(query)) {
             statement.setInt(1, limit);
             try (ResultSet rows = statement.executeQuery()) {
@@ -50,9 +48,5 @@ public final class QueryHistoryRepository {
         } catch (Exception exception) {
             throw new IllegalStateException("Could not load query history.", exception);
         }
-    }
-
-    private String url() {
-        return "jdbc:sqlite:" + workspaceDatabase.toAbsolutePath();
     }
 }

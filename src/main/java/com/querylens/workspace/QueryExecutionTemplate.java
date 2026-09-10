@@ -30,22 +30,44 @@ public abstract class QueryExecutionTemplate {
     private RawQueryResult readRows(ResultSet resultSet, long durationMillis) throws Exception {
         try (resultSet) {
             ResultSetMetaData metadata = resultSet.getMetaData();
-            List<String> columns = new ArrayList<>();
-            for (int column = 1; column <= metadata.getColumnCount(); column++) columns.add(metadata.getColumnLabel(column));
-            List<List<String>> rows = new ArrayList<>();
-            while (resultSet.next() && rows.size() < MAX_ROWS) {
-                List<String> row = new ArrayList<>();
-                for (int column = 1; column <= metadata.getColumnCount(); column++) row.add(String.valueOf(resultSet.getObject(column)));
-                rows.add(row);
-            }
+            List<String> columns = readColumns(metadata);
+            List<List<String>> rows = readRows(resultSet, metadata.getColumnCount());
             return new RawQueryResult(true, columns, rows, 0, durationMillis);
         }
+    }
+
+    private List<String> readColumns(ResultSetMetaData metadata) throws Exception {
+        List<String> columns = new ArrayList<>();
+        for (int column = 1; column <= metadata.getColumnCount(); column++) {
+            columns.add(metadata.getColumnLabel(column));
+        }
+        return columns;
+    }
+
+    private List<List<String>> readRows(ResultSet resultSet, int columnCount) throws Exception {
+        List<List<String>> rows = new ArrayList<>();
+        while (resultSet.next() && rows.size() < MAX_ROWS) {
+            rows.add(readRow(resultSet, columnCount));
+        }
+        return rows;
+    }
+
+    private List<String> readRow(ResultSet resultSet, int columnCount) throws Exception {
+        List<String> row = new ArrayList<>();
+        for (int column = 1; column <= columnCount; column++) {
+            row.add(String.valueOf(resultSet.getObject(column)));
+        }
+        return row;
     }
 
     private long elapsedMillis(long started) {
         return (System.nanoTime() - started) / 1_000_000;
     }
 
-    public record RawQueryResult(boolean returnsRows, List<String> columns, List<List<String>> rows,
-                                 int affectedRows, long durationMillis) { }
+    public record RawQueryResult(boolean returnsRows,
+                                 List<String> columns,
+                                 List<List<String>> rows,
+                                 int affectedRows,
+                                 long durationMillis) {
+    }
 }
