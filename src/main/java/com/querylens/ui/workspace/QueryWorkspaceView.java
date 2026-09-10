@@ -18,6 +18,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -34,6 +35,7 @@ public final class QueryWorkspaceView extends VBox {
     private final TableView<List<String>> rows = new TableView<>();
     private final TableView<QueryHistoryEntry> history = new TableView<>();
     private final Button run = new Button("Run query");
+    private final Button saveQuery = new Button("Save query");
 
     public QueryWorkspaceView(QueryWorkspaceService service) {
         this.service = service;
@@ -77,7 +79,32 @@ public final class QueryWorkspaceView extends VBox {
         HBox.setHgrow(connection, Priority.ALWAYS);
         run.setDefaultButton(true);
         run.setOnAction(event -> execute());
-        return new VBox(8, heading, new HBox(8, new Label("Database"), connection, run), new Label("SQL"), sql);
+        saveQuery.setOnAction(event -> saveCurrentQuery());
+        return new VBox(8, heading, new HBox(8, new Label("Database"), connection, run, saveQuery), new Label("SQL"), sql);
+    }
+
+    public void loadSql(String savedSql) {
+        sql.setText(savedSql);
+        sql.requestFocus();
+    }
+
+    private void saveCurrentQuery() {
+        if (sql.getText().isBlank()) {
+            showError("Enter SQL before saving the query.");
+            return;
+        }
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Save query");
+        dialog.setHeaderText("Save this SQL statement for later use.");
+        dialog.setContentText("Title:");
+        dialog.showAndWait().ifPresent(title -> {
+            try {
+                service.saveQuery(title, sql.getText());
+                status.setText("Saved query: " + title.strip());
+            } catch (Exception exception) {
+                showError(exception.getMessage());
+            }
+        });
     }
 
     private SplitPane createResults() {

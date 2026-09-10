@@ -70,6 +70,21 @@ class QueryWorkspaceServiceTest {
     }
 
     @Test
+    void savesValidatesAndUpdatesReusableQueries() {
+        var saved = service.saveQuery("Order lookup", "SELECT * FROM orders WHERE id = 1");
+
+        assertEquals("Order lookup", service.savedQueries().getFirst().title());
+        assertThrows(IllegalArgumentException.class, () -> service.saveQuery("", "SELECT 1"));
+        assertThrows(IllegalArgumentException.class, () -> service.saveQuery("Empty", "   "));
+
+        service.updateSavedQuery(saved.id(), "Customer lookup", "SELECT * FROM orders WHERE customer = 'Amina'");
+        assertEquals("Customer lookup", service.savedQueries().getFirst().title());
+
+        service.deleteSavedQuery(saved.id());
+        assertTrue(service.savedQueries().isEmpty());
+    }
+
+    @Test
     void savesRecommendationsAndAllowsOneFinalDecision() {
         QueryExecutionResult result = service.run(targetDatabase, "SELECT * FROM orders WHERE id = 1");
 
