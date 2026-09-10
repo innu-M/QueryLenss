@@ -1,7 +1,5 @@
 package com.querylens.recommendation.state;
 
-import com.querylens.recommendation.model.RecommendationStatus;
-
 public final class RecommendationStateFactory {
     private RecommendationStateFactory() {
     }
@@ -14,5 +12,6 @@ public final class RecommendationStateFactory {
         };
     }
 }
+
 
 

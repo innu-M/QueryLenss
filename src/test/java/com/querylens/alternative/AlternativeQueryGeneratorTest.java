@@ -1,8 +1,5 @@
 package com.querylens.alternative;
 
-import com.querylens.alternative.model.GeneratedQueryCandidate;
-import com.querylens.alternative.service.AlternativeQueryGenerator;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 

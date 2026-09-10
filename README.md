@@ -64,15 +64,15 @@ The codebase is organized by feature area, with a consistent separation between 
 
 ```
 src/main/java/com/querylens/
-├── workspace/        — analysis, execution, validation, facade, and models
-├── recommendation/   — model, state, strategy, and service packages
-├── alternative/      — adapters, parser, strategies, services, and models
-├── benchmark/        — command, observer, service, and metric models
-├── plan/             — adapter, builder, composite model, service, and visitor
-├── history/model/    — saved comparison data transfer models
-├── sandbox/          — safe proposed-index models and service
-├── persistence/      — repositories grouped by stored feature
-└── ui/               — JavaFX views grouped by screen/feature
+├── workspace/       — connections, query execution, SQL analysis
+├── recommendation/  — recommendation strategies and lifecycle
+├── alternative/      — alternative query generation and competition
+├── benchmark/        — configurable benchmarking and ranking
+├── plan/              — EXPLAIN QUERY PLAN parsing, tree building, visitors
+├── history/           — comparison history data model
+├── sandbox/           — safe proposed-index testing
+├── persistence/       — repositories (SQLite/JDBC access)
+└── ui/                — JavaFX views, one per screen
 ```
 
 Each feature area has a persistence layer (`*Repository`), a service/facade layer that the UI depends on, and pattern-based building blocks chosen for that area's specific problem — not applied uniformly for their own sake. See [`docs/`](docs/) for a full per-feature writeup.
@@ -83,18 +83,18 @@ Each feature area has a persistence layer (`*Repository`), a service/facade laye
 
 | Pattern | Where | Problem It Solves |
 |---|---|---|
-| **Strategy** | `alternative/strategy`, `recommendation/strategy`, `benchmark/model/RankingStrategy` | Swappable algorithms for generating candidates, recommending fixes, and ranking results |
+| **Strategy** | `alternative/*Strategy`, `recommendation/*Strategy`, `benchmark/RankingStrategy` | Swappable algorithms for generating candidates, recommending fixes, and ranking results |
 | **Factory** | `AlternativeQueryStrategyFactory`, `RecommendationStrategyFactory`, `RecommendationStateFactory` | Centralizes which strategy/state runs for a given input, without callers knowing concrete classes |
-| **State** | `recommendation/state` (Pending → Applied or Dismissed) | Only valid status transitions are possible |
-| **Chain of Responsibility** | `workspace/validation/chain` | Independent, composable safety checks before a query executes |
-| **Template Method** | `workspace/execution/AbstractQueryExecutor` | Shares the JDBC execution algorithm while subclasses provide a database connection |
-| **Composite** | `plan/model/QueryPlanComponent`, `QueryPlanNode` | `EXPLAIN QUERY PLAN` output is naturally an immutable parent/child tree |
-| **Visitor** | `plan/visitor` | Per-operator explanations without coupling them to the tree model |
-| **Builder** | `plan/builder/QueryPlanTreeBuilder` | Assembles an immutable plan tree from raw, unordered plan rows |
+| **State** | `recommendation/RecommendationState` (Pending → Applied → Dismissed) | Only valid status transitions are possible |
+| **Chain of Responsibility** | `workspace/SqlValidationChain`, `SqlValidationRule` | Independent, composable safety checks before a query executes |
+| **Template Method** | `workspace/QueryExecutionTemplate` | Fixed execute → analyze → record workflow with pluggable steps per query type |
+| **Composite** | `plan/QueryPlanComponent`, `QueryPlanNode` | `EXPLAIN QUERY PLAN` output is naturally a parent/child tree |
+| **Visitor** | `plan/QueryPlanVisitor`, `PlanExplanationVisitor` | Per-operator explanations without a giant switch statement |
+| **Builder** | `plan/QueryPlanTreeBuilder` | Assembles a plan tree from raw, unordered plan rows |
 | **Repository** | `persistence/*Repository` | Keeps all SQLite/JDBC code out of services and UI |
 | **Facade / Service** | `QueryWorkspaceService`, `AlternativeQueryCompetitionService`, `PlanComparisonService` | UI talks to one coordinating object instead of orchestrating persistence + logic itself |
 | **Adapter** | `SQLiteQueryExecutor`, `SQLiteQueryPlanInspector`, `SQLiteIndexCatalogProvider` | Hides SQLite-specific quirks behind a stable interface |
-| **Observer** | `benchmark/observer/BenchmarkProgressListener` | UI reacts to in-progress benchmark runs without the benchmark logic knowing about JavaFX |
+| **Observer** | `benchmark/BenchmarkProgressListener` | UI reacts to in-progress benchmark runs without the benchmark logic knowing about JavaFX |
 
 Full reasoning for each pattern — problem, alternatives considered, and future extensibility — is documented per feature:
 
@@ -108,7 +108,7 @@ Full reasoning for each pattern — problem, alternatives considered, and future
 
 ## 🗄️ Database
 
-SQLite, initialized automatically on first run (`persistence/core/DatabaseInitializer`). Schema: [`src/main/resources/database/schema.sql`](src/main/resources/database/schema.sql).
+SQLite, initialized automatically on first run (`persistence/DatabaseInitializer`). Schema: [`src/main/resources/database/schema.sql`](src/main/resources/database/schema.sql).
 
 - **Core workflow:** `database_connections`, `query_history`, `query_analyses`, `recommendations`
 - **Comparison workflow:** `comparison_sessions`, `comparison_candidates`, `benchmark_runs`

@@ -4,22 +4,11 @@ import java.util.List;
 import java.util.Locale;
 
 public final class SqlValidationChain {
-    private final List<SqlValidationRule> rules;
-
-    public SqlValidationChain() {
-        this.rules = List.of(
-                this::validateNotBlank,
-                this::validateSingleStatement,
-                this::validateSupportedStatement
-        );
-    }
-
-    public SqlValidationChain(List<SqlValidationRule> rules) {
-        if (rules == null || rules.isEmpty()) {
-            throw new IllegalArgumentException("At least one SQL validation rule is required.");
-        }
-        this.rules = List.copyOf(rules);
-    }
+    private final List<SqlValidationRule> rules = List.of(
+            this::validateNotBlank,
+            this::validateSingleStatement,
+            this::validateSupportedStatement
+    );
 
     public void validate(String sql) {
         rules.forEach(rule -> rule.validate(sql));
@@ -57,5 +46,6 @@ public final class SqlValidationChain {
                 || keyword.equals("VACUUM");
     }
 }
+
 
 

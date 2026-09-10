@@ -1,9 +1,5 @@
 package com.querylens.sandbox;
 
-import com.querylens.sandbox.model.ProposedIndex;
-import com.querylens.sandbox.model.SandboxIndexResult;
-import com.querylens.sandbox.service.SandboxIndexTester;
-
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;

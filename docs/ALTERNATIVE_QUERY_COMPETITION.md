@@ -29,8 +29,8 @@ This is a local competition percentile. It means that a candidate ranked faster 
 
 - **Strategy:** each `AlternativeQueryStrategy` owns one generation rule.
 - **Factory:** `AlternativeQueryStrategyFactory` creates the standard strategy set.
-- **Adapter:** `SQLiteIndexCatalogProvider`, `SQLiteBenchmarkExecutor`, and `SQLiteQueryPlanInspector` isolate SQLite APIs.
-- **Facade/Service:** `AlternativeQueryCompetitionService` coordinates the workflow. `CandidateRanker` handles ranking and measured explanations, while `CompetitionHistoryMapper` maps results for persistence.
+- **Adapter:** `SQLiteIndexCatalogProvider`, `SQLiteReadOnlyQueryExecutor`, and `SQLiteQueryPlanInspector` isolate SQLite APIs.
+- **Facade/Service:** `AlternativeQueryCompetitionService` coordinates generation, verification, benchmarking, ranking, plans, explanations, and persistence.
 - **Observer:** `BenchmarkProgressListener` publishes warm-up, measurement, cancellation, timeout, failure, and completion events to JavaFX.
 - **Repository:** `ComparisonHistoryRepository` saves the completed competition without exposing schema details to the service.
 

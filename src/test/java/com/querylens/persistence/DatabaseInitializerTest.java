@@ -1,7 +1,5 @@
 package com.querylens.persistence;
 
-import com.querylens.persistence.core.DatabaseInitializer;
-
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;

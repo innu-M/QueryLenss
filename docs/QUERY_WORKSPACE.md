@@ -12,9 +12,7 @@ The workspace accepts `SELECT`, `INSERT`, `UPDATE`, and `DELETE`. It blocks mult
 
 - **Repository:** `ConnectionRepository` and `QueryHistoryRepository` keep workspace SQL isolated from the UI and service layer.
 - **Facade:** `QueryWorkspaceService` gives the UI one entry point for saving connections, running a query, loading history, and applying validation.
-- **Template Method:** `AbstractQueryExecutor` owns the shared timing and JDBC workflow. `SQLiteQueryExecutor` supplies the SQLite-specific connection.
+- **Template Method:** `QueryExecutionTemplate` owns the shared timing and JDBC workflow. `SQLiteQueryExecutor` supplies the SQLite-specific connection.
 - **Chain of Responsibility:** `SqlValidationChain` runs focused validation rules before execution.
 
 The view classes only handle controls and presentation. SQL execution, validation, analysis, and persistence remain outside the `ui` package.
-
-The workspace code is grouped by responsibility: `model`, `analysis`, `execution`, `validation/chain`, and `facade`.
