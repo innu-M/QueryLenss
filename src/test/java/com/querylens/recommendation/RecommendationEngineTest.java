@@ -1,7 +1,8 @@
 package com.querylens.recommendation;
 
-import com.querylens.workspace.analysis.SimpleQueryAnalyzer;
-import com.querylens.workspace.SqlQueryType;
+import com.querylens.recommendation.service.RecommendationEngine;
+import com.querylens.workspace.analysis.RegexQueryAnalyzer;
+import com.querylens.workspace.model.SqlQueryType;
 import com.querylens.recommendation.strategy.RecommendationStrategyFactory;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RecommendationEngineTest {
     private final RecommendationEngine engine = new RecommendationEngine(new RecommendationStrategyFactory());
-    private final SimpleQueryAnalyzer analyzer = new SimpleQueryAnalyzer();
+    private final RegexQueryAnalyzer analyzer = new RegexQueryAnalyzer();
 
     @Test
     void createsSuggestionsForSelectStarFiltersSortingAndJoins() {
@@ -27,4 +28,3 @@ class RecommendationEngineTest {
         assertTrue(suggestions.stream().anyMatch(message -> message.contains("join")));
     }
 }
-

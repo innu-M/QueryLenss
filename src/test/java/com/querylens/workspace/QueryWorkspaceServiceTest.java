@@ -1,7 +1,9 @@
 package com.querylens.workspace;
 
-import com.querylens.persistence.DatabaseInitializer;
+import com.querylens.persistence.core.DatabaseInitializer;
 import com.querylens.workspace.facade.QueryWorkspaceService;
+import com.querylens.workspace.model.QueryExecutionResult;
+import com.querylens.workspace.model.SqlQueryType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -52,6 +54,22 @@ class QueryWorkspaceServiceTest {
     }
 
     @Test
+    void updatesAndDeletesSavedConnections() throws Exception {
+        Path replacementDatabase = directory.resolve("replacement.db");
+        try (var ignored = DriverManager.getConnection("jdbc:sqlite:" + replacementDatabase)) {
+            // Opening SQLite creates a valid empty database file for connection validation.
+        }
+        var saved = service.saveConnection("Original", targetDatabase);
+
+        service.updateConnection(saved.id(), "Replacement", replacementDatabase);
+        assertEquals("Replacement", service.connections().getFirst().displayName());
+        assertEquals(replacementDatabase.toAbsolutePath(), service.connections().getFirst().databasePath());
+
+        service.deleteConnection(saved.id());
+        assertTrue(service.connections().isEmpty());
+    }
+
+    @Test
     void savesRecommendationsAndAllowsOneFinalDecision() {
         QueryExecutionResult result = service.run(targetDatabase, "SELECT * FROM orders WHERE id = 1");
 
@@ -59,9 +77,12 @@ class QueryWorkspaceServiceTest {
         long recommendationId = result.recommendations().getFirst().id();
         service.applyRecommendation(recommendationId);
 
-        assertEquals(com.querylens.recommendation.state.RecommendationStatus.APPLIED,
+        assertEquals(com.querylens.recommendation.model.RecommendationStatus.APPLIED,
                 service.recommendations().stream().filter(item -> item.id() == recommendationId).findFirst().orElseThrow().status());
         assertThrows(IllegalStateException.class, () -> service.dismissRecommendation(recommendationId));
+
+        service.deleteRecommendation(recommendationId);
+        assertTrue(service.recommendations().stream().noneMatch(item -> item.id() == recommendationId));
     }
 
     @Test
@@ -75,4 +96,3 @@ class QueryWorkspaceServiceTest {
         assertThrows(IllegalArgumentException.class, () -> service.run(targetDatabase, "DROP TABLE orders"));
     }
 }
-

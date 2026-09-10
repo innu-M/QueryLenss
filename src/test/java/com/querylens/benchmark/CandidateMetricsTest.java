@@ -1,5 +1,8 @@
 package com.querylens.benchmark;
 
+import com.querylens.benchmark.model.CandidateMetrics;
+import com.querylens.benchmark.model.RankingStrategy;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

@@ -1,5 +1,10 @@
 package com.querylens.plan;
 
+import com.querylens.plan.adapter.QueryPlanProvider;
+import com.querylens.plan.model.QueryPlanRow;
+import com.querylens.plan.service.PlanComparisonReport;
+import com.querylens.plan.service.PlanComparisonService;
+
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
