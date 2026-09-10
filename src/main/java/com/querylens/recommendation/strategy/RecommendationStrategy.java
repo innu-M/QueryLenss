@@ -1,6 +1,6 @@
 package com.querylens.recommendation.strategy;
 
-import com.querylens.workspace.QueryAnalysis;
+import com.querylens.workspace.model.QueryAnalysis;
 
 import java.util.List;
 

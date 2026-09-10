@@ -1,12 +1,13 @@
 package com.querylens.persistence;
 
-import com.querylens.recommendation.state.RecommendationStatus;
-import com.querylens.persistence.repository.ConnectionRepository;
-import com.querylens.persistence.repository.QueryAnalysisRepository;
-import com.querylens.persistence.repository.QueryHistoryRepository;
-import com.querylens.persistence.repository.RecommendationRepository;
-import com.querylens.workspace.QueryAnalysis;
-import com.querylens.workspace.SqlQueryType;
+import com.querylens.persistence.core.DatabaseInitializer;
+import com.querylens.recommendation.model.RecommendationStatus;
+import com.querylens.persistence.connection.ConnectionRepository;
+import com.querylens.persistence.query.QueryAnalysisRepository;
+import com.querylens.persistence.query.QueryHistoryRepository;
+import com.querylens.persistence.recommendation.RecommendationRepository;
+import com.querylens.workspace.model.QueryAnalysis;
+import com.querylens.workspace.model.SqlQueryType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -80,4 +81,3 @@ class WorkspacePersistenceRepositoryTest {
                 List.of("customer_id"), false, 1, "LOW");
     }
 }
-
