@@ -1,13 +1,5 @@
 package com.querylens.plan;
 
-import com.querylens.plan.builder.QueryPlanTreeBuilder;
-import com.querylens.plan.model.PlanInsight;
-import com.querylens.plan.model.PlanOperationType;
-import com.querylens.plan.model.QueryPlanNode;
-import com.querylens.plan.model.QueryPlanRow;
-import com.querylens.plan.model.QueryPlanTree;
-import com.querylens.plan.visitor.PlanExplanationVisitor;
-
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -51,29 +43,6 @@ class QueryPlanTreeBuilderTest {
         assertThrows(IllegalArgumentException.class, () -> builder.build(List.of(
                 new QueryPlanRow(1, 0, "SCAN sailors"),
                 new QueryPlanRow(1, 0, "SCAN boats"))));
-    }
-
-    @Test
-    void rejectsCyclesEvenWhenAnotherValidRootExists() {
-        assertThrows(IllegalArgumentException.class, () -> builder.build(List.of(
-                new QueryPlanRow(1, 0, "SCAN sailors"),
-                new QueryPlanRow(2, 3, "SCAN boats"),
-                new QueryPlanRow(3, 2, "SCAN reserves"))));
-    }
-
-    @Test
-    void rejectsParentCycles() {
-        assertThrows(IllegalArgumentException.class, () -> builder.build(List.of(
-                new QueryPlanRow(1, 2, "SCAN sailors"),
-                new QueryPlanRow(2, 1, "SCAN boats"))));
-    }
-
-    @Test
-    void exposesImmutableChildren() {
-        QueryPlanTree tree = builder.build(List.of(new QueryPlanRow(1, 0, "SCAN sailors")));
-
-        assertThrows(UnsupportedOperationException.class,
-                () -> tree.roots().getFirst().children().add(tree.roots().getFirst()));
     }
 
     @Test

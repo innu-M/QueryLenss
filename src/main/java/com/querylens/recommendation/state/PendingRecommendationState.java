@@ -1,7 +1,5 @@
 package com.querylens.recommendation.state;
 
-import com.querylens.recommendation.model.RecommendationStatus;
-
 public final class PendingRecommendationState implements RecommendationState {
     @Override
     public RecommendationStatus status() {
@@ -18,5 +16,6 @@ public final class PendingRecommendationState implements RecommendationState {
         return new DismissedRecommendationState();
     }
 }
+
 
 

@@ -1,12 +1,10 @@
 package com.querylens.persistence;
 
-import com.querylens.persistence.comparison.ComparisonHistoryRepository;
-import com.querylens.persistence.core.DatabaseInitializer;
-import com.querylens.benchmark.model.RankingStrategy;
-import com.querylens.history.model.ComparisonCandidateDraft;
-import com.querylens.history.model.ComparisonDraft;
-import com.querylens.history.model.ComparisonHistorySummary;
-import com.querylens.history.model.ComparisonSessionEntry;
+import com.querylens.benchmark.RankingStrategy;
+import com.querylens.history.ComparisonCandidateDraft;
+import com.querylens.history.ComparisonDraft;
+import com.querylens.history.ComparisonHistorySummary;
+import com.querylens.history.ComparisonSessionEntry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
