@@ -14,6 +14,7 @@ import com.querylens.ui.alternative.AlternativeCompetitionView;
 import com.querylens.ui.history.ComparisonHistoryView;
 import com.querylens.ui.plan.PlanTreeComparisonView;
 import com.querylens.ui.connection.ConnectionsView;
+import com.querylens.ui.query.SavedQueriesView;
 import com.querylens.ui.workspace.QueryWorkspaceView;
 import com.querylens.ui.recommendation.RecommendationsView;
 import com.querylens.workspace.facade.QueryWorkspaceService;
@@ -44,6 +45,7 @@ public class App extends Application {
         TabPane navigation = new TabPane();
         navigation.getTabs().add(new Tab("Query Workspace", workspaceView));
         navigation.getTabs().add(new Tab("Connections", new ConnectionsView(workspaceService, workspaceView::refreshConnections)));
+        navigation.getTabs().add(new Tab("Saved Queries", new SavedQueriesView(workspaceService, workspaceView::loadSql)));
         navigation.getTabs().add(new Tab("Recommendations", new RecommendationsView(workspaceService)));
         navigation.getTabs().add(new Tab("Benchmark", createBenchmarkWorkspace(databasePath)));
         AlternativeQueryCompetitionService competitionService = new AlternativeQueryCompetitionService(

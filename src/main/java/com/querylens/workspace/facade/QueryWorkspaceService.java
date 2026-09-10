@@ -3,6 +3,7 @@ package com.querylens.workspace.facade;
 import com.querylens.persistence.connection.ConnectionRepository;
 import com.querylens.persistence.query.QueryHistoryRepository;
 import com.querylens.persistence.query.QueryAnalysisRepository;
+import com.querylens.persistence.query.SavedQueryRepository;
 import com.querylens.persistence.recommendation.RecommendationRepository;
 import com.querylens.recommendation.model.Recommendation;
 import com.querylens.recommendation.service.RecommendationEngine;
@@ -12,6 +13,7 @@ import com.querylens.recommendation.strategy.RecommendationStrategyFactory;
 import com.querylens.workspace.model.QueryExecutionResult;
 import com.querylens.workspace.model.QueryHistoryEntry;
 import com.querylens.workspace.model.SavedConnection;
+import com.querylens.workspace.model.SavedQuery;
 import com.querylens.workspace.analysis.SqlClassifier;
 import com.querylens.workspace.analysis.RegexQueryAnalyzer;
 import com.querylens.workspace.execution.QueryExecutionWorkflow;
@@ -25,19 +27,23 @@ import java.util.List;
 public final class QueryWorkspaceService {
     private final ConnectionRepository connections;
     private final RecommendationRepository recommendations;
+    private final SavedQueryRepository savedQueries;
     private final QueryExecutionWorkflow executionWorkflow;
 
     public QueryWorkspaceService(Path workspaceDatabase) {
         this.connections = new ConnectionRepository(workspaceDatabase);
         this.recommendations = new RecommendationRepository(workspaceDatabase);
+        this.savedQueries = new SavedQueryRepository(workspaceDatabase);
         this.executionWorkflow = createExecutionWorkflow(workspaceDatabase, recommendations);
     }
 
     public QueryWorkspaceService(ConnectionRepository connections,
                                  RecommendationRepository recommendations,
+                                 SavedQueryRepository savedQueries,
                                  QueryExecutionWorkflow executionWorkflow) {
         this.connections = java.util.Objects.requireNonNull(connections);
         this.recommendations = java.util.Objects.requireNonNull(recommendations);
+        this.savedQueries = java.util.Objects.requireNonNull(savedQueries);
         this.executionWorkflow = java.util.Objects.requireNonNull(executionWorkflow);
     }
 
@@ -57,6 +63,24 @@ public final class QueryWorkspaceService {
 
     public void deleteConnection(long id) {
         connections.delete(id);
+    }
+
+    public List<SavedQuery> savedQueries() {
+        return savedQueries.findAll();
+    }
+
+    public SavedQuery saveQuery(String title, String sql) {
+        validateSavedQuery(title, sql);
+        return savedQueries.save(title.strip(), sql.strip());
+    }
+
+    public SavedQuery updateSavedQuery(long id, String title, String sql) {
+        validateSavedQuery(title, sql);
+        return savedQueries.update(id, title.strip(), sql.strip());
+    }
+
+    public void deleteSavedQuery(long id) {
+        savedQueries.delete(id);
     }
 
     public List<QueryHistoryEntry> recentHistory() {
@@ -92,6 +116,15 @@ public final class QueryWorkspaceService {
         RecommendationState current = RecommendationStateFactory.from(recommendation.status());
         RecommendationState next = apply ? current.apply() : current.dismiss();
         recommendations.updateStatus(id, next.status());
+    }
+
+    private void validateSavedQuery(String title, String sql) {
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("Enter a title for the saved query.");
+        }
+        if (sql == null || sql.isBlank()) {
+            throw new IllegalArgumentException("Enter SQL before saving the query.");
+        }
     }
 
     private void validateConnection(String displayName, Path databasePath) {

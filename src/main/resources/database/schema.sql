@@ -15,6 +15,16 @@ CREATE TABLE IF NOT EXISTS query_history (
     FOREIGN KEY (connection_id) REFERENCES database_connections(id) ON DELETE SET NULL
 );
 
+CREATE TABLE IF NOT EXISTS saved_queries (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL UNIQUE,
+    sql_text TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_saved_queries_title ON saved_queries(title);
+
 CREATE TABLE IF NOT EXISTS query_analyses (
     id INTEGER PRIMARY KEY,
     history_id INTEGER NOT NULL UNIQUE,
