@@ -1,5 +1,8 @@
 package com.querylens.plan;
 
+import com.querylens.plan.adapter.SQLiteQueryPlanInspector;
+import com.querylens.plan.model.QueryPlanRow;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;

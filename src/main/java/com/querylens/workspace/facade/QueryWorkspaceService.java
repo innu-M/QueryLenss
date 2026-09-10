@@ -1,21 +1,21 @@
 package com.querylens.workspace.facade;
 
-import com.querylens.persistence.repository.ConnectionRepository;
-import com.querylens.persistence.repository.QueryHistoryRepository;
-import com.querylens.persistence.repository.QueryAnalysisRepository;
-import com.querylens.persistence.repository.RecommendationRepository;
-import com.querylens.recommendation.Recommendation;
-import com.querylens.recommendation.RecommendationEngine;
+import com.querylens.persistence.connection.ConnectionRepository;
+import com.querylens.persistence.query.QueryHistoryRepository;
+import com.querylens.persistence.query.QueryAnalysisRepository;
+import com.querylens.persistence.recommendation.RecommendationRepository;
+import com.querylens.recommendation.model.Recommendation;
+import com.querylens.recommendation.service.RecommendationEngine;
 import com.querylens.recommendation.state.RecommendationState;
 import com.querylens.recommendation.state.RecommendationStateFactory;
 import com.querylens.recommendation.strategy.RecommendationStrategyFactory;
-import com.querylens.workspace.QueryExecutionResult;
-import com.querylens.workspace.QueryHistoryEntry;
-import com.querylens.workspace.SavedConnection;
-import com.querylens.workspace.SqlClassifier;
-import com.querylens.workspace.analysis.SimpleQueryAnalyzer;
+import com.querylens.workspace.model.QueryExecutionResult;
+import com.querylens.workspace.model.QueryHistoryEntry;
+import com.querylens.workspace.model.SavedConnection;
+import com.querylens.workspace.analysis.SqlClassifier;
+import com.querylens.workspace.analysis.RegexQueryAnalyzer;
 import com.querylens.workspace.execution.QueryExecutionWorkflow;
-import com.querylens.workspace.execution.template.SQLiteQueryExecutor;
+import com.querylens.workspace.execution.SQLiteQueryExecutor;
 import com.querylens.workspace.validation.chain.SqlValidationChain;
 
 import java.nio.file.Files;
@@ -33,14 +33,30 @@ public final class QueryWorkspaceService {
         this.executionWorkflow = createExecutionWorkflow(workspaceDatabase, recommendations);
     }
 
+    public QueryWorkspaceService(ConnectionRepository connections,
+                                 RecommendationRepository recommendations,
+                                 QueryExecutionWorkflow executionWorkflow) {
+        this.connections = java.util.Objects.requireNonNull(connections);
+        this.recommendations = java.util.Objects.requireNonNull(recommendations);
+        this.executionWorkflow = java.util.Objects.requireNonNull(executionWorkflow);
+    }
+
     public SavedConnection saveConnection(String displayName, Path databasePath) {
-        if (displayName == null || displayName.isBlank()) throw new IllegalArgumentException("Enter a name for this connection.");
-        if (databasePath == null || !Files.isRegularFile(databasePath)) throw new IllegalArgumentException("Choose an existing SQLite database file.");
+        validateConnection(displayName, databasePath);
         return connections.save(displayName, databasePath);
     }
 
     public List<SavedConnection> connections() {
         return connections.findAll();
+    }
+
+    public SavedConnection updateConnection(long id, String displayName, Path databasePath) {
+        validateConnection(displayName, databasePath);
+        return connections.update(id, displayName, databasePath);
+    }
+
+    public void deleteConnection(long id) {
+        connections.delete(id);
     }
 
     public List<QueryHistoryEntry> recentHistory() {
@@ -59,6 +75,10 @@ public final class QueryWorkspaceService {
         updateRecommendation(id, false);
     }
 
+    public void deleteRecommendation(long id) {
+        recommendations.delete(id);
+    }
+
     public boolean requiresMutationConfirmation(String sql) {
         return executionWorkflow.requiresMutationConfirmation(sql);
     }
@@ -74,8 +94,13 @@ public final class QueryWorkspaceService {
         recommendations.updateStatus(id, next.status());
     }
 
-    private QueryExecutionWorkflow createExecutionWorkflow(Path workspaceDatabase,
-                                                            RecommendationRepository recommendations) {
+    private void validateConnection(String displayName, Path databasePath) {
+        if (displayName == null || displayName.isBlank()) throw new IllegalArgumentException("Enter a name for this connection.");
+        if (databasePath == null || !Files.isRegularFile(databasePath)) throw new IllegalArgumentException("Choose an existing SQLite database file.");
+    }
+
+    private static QueryExecutionWorkflow createExecutionWorkflow(Path workspaceDatabase,
+                                                                  RecommendationRepository recommendations) {
         return new QueryExecutionWorkflow(
                 new QueryHistoryRepository(workspaceDatabase),
                 new QueryAnalysisRepository(workspaceDatabase),
@@ -83,11 +108,8 @@ public final class QueryWorkspaceService {
                 new RecommendationEngine(new RecommendationStrategyFactory()),
                 new SqlValidationChain(),
                 new SqlClassifier(),
-                new SimpleQueryAnalyzer(),
+                new RegexQueryAnalyzer(),
                 new SQLiteQueryExecutor()
         );
     }
 }
-
-
-

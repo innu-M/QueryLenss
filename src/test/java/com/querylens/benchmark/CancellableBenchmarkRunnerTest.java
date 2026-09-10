@@ -1,5 +1,10 @@
 package com.querylens.benchmark;
 
+import com.querylens.benchmark.model.BenchmarkProgress;
+import com.querylens.benchmark.model.BenchmarkSettings;
+import com.querylens.benchmark.model.RankingStrategy;
+import com.querylens.benchmark.service.CancellableBenchmarkRunner;
+
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
